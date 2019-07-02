@@ -1,0 +1,17 @@
+﻿{
+  "$schema": "https://raw.githubusercontent.com/beat-saber-modding-group/BSIPA-MetadataFileSchema/master/Schema.json",
+  "author": "Halsafar",
+  "description": "Manage various databases of Beat Saber song data.",
+  "gameVersion": "1.1.0",
+  "id": "SongDataCore",
+  "name": "SongDataCore",
+  "version": "1.0.0",
+  "dependsOn": {
+  },
+  "features": [
+    "print",
+    "debug",
+    "warn",
+    "config-provider"
+  ]
+}
