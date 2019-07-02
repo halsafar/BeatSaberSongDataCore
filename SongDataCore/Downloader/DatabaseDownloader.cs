@@ -12,6 +12,7 @@ namespace SongDataCore.Downloader
         public Action OnStartDownloading;
         public Action OnFinishDownloading;
         public Action OnDataFinishedProcessing;
+        public Action OnFailedDownload;
 
         protected readonly byte[] Buffer = new byte[4 * 1048576];
         
@@ -29,6 +30,7 @@ namespace SongDataCore.Downloader
                 var cacheHandler = handler.GetDownloadHandler(www);
                 if (cacheHandler == null)
                 {
+                    OnFailedDownload?.Invoke();
                     Plugin.Log.Error($"Could not acquire a download handler for URL {url}");
                     yield break;
                 }
@@ -53,10 +55,12 @@ namespace SongDataCore.Downloader
                 catch (System.InvalidOperationException)
                 {
                     Plugin.Log.Error($"Failed to download data file...");
+                    OnFailedDownload?.Invoke();
                 }
                 catch (Exception e)
                 {
                     Plugin.Log.Critical($"Exception trying to download data file... {e}");
+                    OnFailedDownload?.Invoke();
                 }
             }
         }
