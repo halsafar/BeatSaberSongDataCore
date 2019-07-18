@@ -18,7 +18,6 @@ namespace SongDataCore.BeatSaver
         public BeatSaverSongUploader uploader { get; set; }
         public string hash { get; set; }
         public string uploaded { get; set; }
-        public bool converted { get; set; }
         public string downloadURL { get; set; }
         public string coverURL { get; set; }
     }
@@ -50,6 +49,7 @@ namespace SongDataCore.BeatSaver
         public string notes { get; set; }
         public string obstacles { get; set; }
         public string njs { get; set; }
+        public string njsOffset { get; set; }
     }
 
     public class BeatSaverSongStats
