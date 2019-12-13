@@ -4,6 +4,7 @@ using UnityEngine;
 using SongDataCore.BeatSaver;
 using SongDataCore.ScoreSaber;
 using IPA;
+using BS_Utils.Utilities;
 
 namespace SongDataCore
 {

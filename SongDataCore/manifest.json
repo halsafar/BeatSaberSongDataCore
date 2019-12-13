@@ -9,9 +9,5 @@
   "dependsOn": {
   },
   "features": [
-    "print",
-    "debug",
-    "warn",
-    "config-provider"
   ]
 }
