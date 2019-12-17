@@ -4,6 +4,8 @@ using System.Collections.Generic;
 using System.Collections;
 using UnityEngine;
 using UnityEngine.Networking;
+using System.Threading;
+using System.Threading.Tasks;
 
 namespace SongDataCore.Downloader
 {
@@ -14,8 +16,6 @@ namespace SongDataCore.Downloader
         public Action OnDataFinishedProcessing;
         public Action OnFailedDownload;
 
-        protected readonly byte[] Buffer = new byte[4 * 1048576];
-        
         /// <summary>
         /// Download a database, invoke the appropriate actions to inform listerns.
         /// </summary>
@@ -42,15 +42,22 @@ namespace SongDataCore.Downloader
 
                 OnFinishDownloading?.Invoke();
 
+                bool running = true;
                 try
                 {
-                    Plugin.Log.Info($"Processing data!");
-
-                    handler.HandleDownloadResults(www.downloadHandler);
-
-                    OnDataFinishedProcessing?.Invoke();
-
-                    Plugin.Log.Info($"Success processing data!");
+                    Plugin.Log.Info($"Started data processing thread!");
+                    Task mytask = Task.Run(() =>
+                    {
+                        try
+                        {
+                            handler.HandleDownloadResults(www.downloadHandler);
+                            Plugin.Log.Info($"Success processing data: {www.url}");
+                        }
+                        finally
+                        {
+                            running = false;
+                        }
+                    });
                 }
                 catch (System.InvalidOperationException)
                 {
@@ -62,6 +69,13 @@ namespace SongDataCore.Downloader
                     Plugin.Log.Critical($"Exception trying to download data file... {e}");
                     OnFailedDownload?.Invoke();
                 }
+
+                // Wait for the thread to finish/die
+                while (running)
+                {
+                    yield return null;
+                }
+                OnDataFinishedProcessing?.Invoke();
             }
         }
     }

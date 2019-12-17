@@ -18,11 +18,17 @@ namespace SongDataCore.BeatSaver
             Stopwatch timer = new Stopwatch();
             timer.Start();
 
-            string result = System.Text.Encoding.UTF8.GetString(data);
+            try
+            {
+                string result = System.Text.Encoding.UTF8.GetString(data);
 
-            List<BeatSaverSong> songs = JsonConvert.DeserializeObject<List<BeatSaverSong>>(result);
-            Songs = songs.ToDictionary(x => x.hash, x => x, StringComparer.OrdinalIgnoreCase);
-
+                List<BeatSaverSong> songs = JsonConvert.DeserializeObject<List<BeatSaverSong>>(result);
+                Songs = songs.ToDictionary(x => x.hash, x => x, StringComparer.OrdinalIgnoreCase);
+            }
+            catch (Exception e)
+            {
+                Plugin.Log.Error("BeatSaver data corrupted...");
+            }
             timer.Stop();
 
             Plugin.Log.Debug($"Processing BeatSaver data took {timer.ElapsedMilliseconds}ms");

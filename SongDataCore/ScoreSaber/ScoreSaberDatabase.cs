@@ -12,12 +12,20 @@ namespace SongDataCore.ScoreSaber
 
         public ScoreSaberDataFile Data = null;
 
+        protected byte[] Buffer = new byte[2 * 1048576];
+
         /// <summary>
         /// Start downloading the BeatSaver database.
         /// </summary>
-        public void Start()
+        public void Load()
         {
             StartCoroutine(DownloadScoreSaberDatabases());            
+        }
+
+        public void Unload()
+        {
+            Data = null;
+            System.GC.Collect();
         }
 
         /// <summary>

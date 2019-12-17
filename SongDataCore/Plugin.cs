@@ -17,6 +17,8 @@ namespace SongDataCore
         public static BeatSaverDatabase BeatSaver;
         public static ScoreSaberDatabase ScoreSaber;
 
+        public bool DatabasesLoaded;
+
         public string Name
         {
             get { return "SongDataCore"; }
@@ -35,9 +37,16 @@ namespace SongDataCore
         public void OnApplicationStart()
         {
             Instance = this;
+            DatabasesLoaded = false;
 
             BSEvents.OnLoad();
+
             BSEvents.menuSceneLoadedFresh += OnMenuSceneLoadedFresh;
+            BSEvents.menuSceneLoaded += OnMenuSceneLoaded;
+            BSEvents.gameSceneLoaded += OnGameSceneLoaded;
+
+            BeatSaver = new GameObject("SongDataCore_BeatSaver").AddComponent<BeatSaverDatabase>();
+            ScoreSaber = new GameObject("SongDataCore_ScoreSaber").AddComponent<ScoreSaberDatabase>();
         }
 
         public void OnApplicationQuit()
@@ -47,8 +56,38 @@ namespace SongDataCore
 
         private void OnMenuSceneLoadedFresh()
         {
-            BeatSaver = new GameObject("SongDataCore_BeatSaver").AddComponent<BeatSaverDatabase>();
-            ScoreSaber = new GameObject("SongDataCore_ScoreSaber").AddComponent<ScoreSaberDatabase>();
+            Log.Info("OnMenuSceneLoadedFresh()");
+
+            if (DatabasesLoaded) return;
+
+            BeatSaver.Load();
+            ScoreSaber.Load();
+
+            DatabasesLoaded = true;
+        }
+
+        private void OnMenuSceneLoaded()
+        {
+            Log.Info("OnMenuSceneLoaded()");
+
+            if (DatabasesLoaded) return;
+
+            BeatSaver.Load();
+            ScoreSaber.Load();
+
+            DatabasesLoaded = true;
+        }
+
+        private void OnGameSceneLoaded()
+        {
+            Log.Info("OnGameSceneLoaded()");
+
+            if (!DatabasesLoaded) return;
+
+            BeatSaver.Unload();
+            ScoreSaber.Unload();
+
+            DatabasesLoaded = false;
         }
 
         public void OnSceneLoaded(Scene scene, LoadSceneMode sceneMode)

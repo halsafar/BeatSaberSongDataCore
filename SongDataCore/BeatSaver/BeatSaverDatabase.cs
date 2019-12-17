@@ -9,13 +9,21 @@ namespace SongDataCore.BeatSaver
         public const String BEAT_SAVER_DATA_DUMP_URL = "https://beatsaver.com/api/download/dump/maps";
 
         public BeatSaverDataFile Data = null;
-        
+
+        protected byte[] Buffer = new byte[64 * 1048576];
+
         /// <summary>
         /// Start downloading the BeatSaver database.
         /// </summary>
-        public void Start()
+        public void Load()
         {
             StartCoroutine(DownloadDatabase(BEAT_SAVER_DATA_DUMP_URL, this));
+        }
+
+        public void Unload()
+        {
+            Data = null;
+            System.GC.Collect();
         }
 
         /// <summary>
