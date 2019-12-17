@@ -1,10 +1,7 @@
-﻿using Newtonsoft.Json;
-using System;
-using System.Collections.Generic;
+﻿using System;
 using System.Collections;
 using UnityEngine;
 using UnityEngine.Networking;
-using System.Threading;
 using System.Threading.Tasks;
 
 namespace SongDataCore.Downloader
