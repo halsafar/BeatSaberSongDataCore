@@ -46,7 +46,9 @@ namespace SongDataCore
             BSEvents.gameSceneLoaded += OnGameSceneLoaded;
 
             BeatSaver = new GameObject("SongDataCore_BeatSaver").AddComponent<BeatSaverDatabase>();
+            UnityEngine.Object.DontDestroyOnLoad(BeatSaver);
             ScoreSaber = new GameObject("SongDataCore_ScoreSaber").AddComponent<ScoreSaberDatabase>();
+            UnityEngine.Object.DontDestroyOnLoad(ScoreSaber);
         }
 
         public void OnApplicationQuit()
