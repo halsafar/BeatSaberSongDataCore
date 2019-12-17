@@ -5,7 +5,7 @@
   "gameVersion": "1.6.0",
   "id": "SongDataCore",
   "name": "SongDataCore",
-  "version": "1.1.5",
+  "version": "1.2.0",
   "dependsOn": {
   },
   "features": [
