@@ -44,11 +44,6 @@ namespace SongDataCore
             BSEvents.menuSceneLoadedFresh += OnMenuSceneLoadedFresh;
             BSEvents.menuSceneLoaded += OnMenuSceneLoaded;
             BSEvents.gameSceneLoaded += OnGameSceneLoaded;
-
-            BeatSaver = new GameObject("SongDataCore_BeatSaver").AddComponent<BeatSaverDatabase>();
-            UnityEngine.Object.DontDestroyOnLoad(BeatSaver);
-            ScoreSaber = new GameObject("SongDataCore_ScoreSaber").AddComponent<ScoreSaberDatabase>();
-            UnityEngine.Object.DontDestroyOnLoad(ScoreSaber);
         }
 
         public void OnApplicationQuit()
@@ -59,6 +54,11 @@ namespace SongDataCore
         private void OnMenuSceneLoadedFresh()
         {
             Log.Info("OnMenuSceneLoadedFresh()");
+
+            BeatSaver = new GameObject("SongDataCore_BeatSaver").AddComponent<BeatSaverDatabase>();
+            UnityEngine.Object.DontDestroyOnLoad(BeatSaver);
+            ScoreSaber = new GameObject("SongDataCore_ScoreSaber").AddComponent<ScoreSaberDatabase>();
+            UnityEngine.Object.DontDestroyOnLoad(ScoreSaber);
 
             if (DatabasesLoaded) return;
 
@@ -86,8 +86,14 @@ namespace SongDataCore
 
             if (!DatabasesLoaded) return;
 
+            System.GC.Collect();
+
+            Plugin.Log.Debug($"Before Unload: Total Memory: {GC.GetTotalMemory(false)}");
+
             BeatSaver.Unload();
             ScoreSaber.Unload();
+
+            Plugin.Log.Debug($"After Unload: Total Memory: {GC.GetTotalMemory(false)}");
 
             DatabasesLoaded = false;
         }

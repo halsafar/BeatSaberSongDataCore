@@ -72,6 +72,9 @@ namespace SongDataCore.Downloader
                 {
                     yield return null;
                 }
+
+                yield return new WaitForEndOfFrame();
+
                 OnDataFinishedProcessing?.Invoke();
             }
         }
