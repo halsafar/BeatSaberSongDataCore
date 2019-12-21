@@ -56,22 +56,30 @@ namespace SongDataCore
             Log.Info("OnMenuSceneLoadedFresh()");
 
             BeatSaver = new GameObject("SongDataCore_BeatSaver").AddComponent<BeatSaverDatabase>();
-            UnityEngine.Object.DontDestroyOnLoad(BeatSaver);
+            UnityEngine.Object.DontDestroyOnLoad(BeatSaver.gameObject);
+
             ScoreSaber = new GameObject("SongDataCore_ScoreSaber").AddComponent<ScoreSaberDatabase>();
-            UnityEngine.Object.DontDestroyOnLoad(ScoreSaber);
+            UnityEngine.Object.DontDestroyOnLoad(ScoreSaber.gameObject);
 
-            if (DatabasesLoaded) return;
-
-            BeatSaver.Load();
-            ScoreSaber.Load();
-
-            DatabasesLoaded = true;
+            LoadDatabases();
         }
 
         private void OnMenuSceneLoaded()
         {
             Log.Info("OnMenuSceneLoaded()");
 
+            LoadDatabases();
+        }
+
+        private void OnGameSceneLoaded()
+        {
+            Log.Info("OnGameSceneLoaded()");
+
+            UnloadDatabases();
+        }
+
+        private void LoadDatabases()
+        {
             if (DatabasesLoaded) return;
 
             BeatSaver.Load();
@@ -80,20 +88,19 @@ namespace SongDataCore
             DatabasesLoaded = true;
         }
 
-        private void OnGameSceneLoaded()
+        private void UnloadDatabases()
         {
-            Log.Info("OnGameSceneLoaded()");
-
             if (!DatabasesLoaded) return;
 
             System.GC.Collect();
+            Plugin.Log.Debug($"BeatSaver Total Memory: {GC.GetTotalMemory(false)}");
 
-            Plugin.Log.Debug($"Before Unload: Total Memory: {GC.GetTotalMemory(false)}");
-
+            Plugin.Log.Info($"Unloading SongDataCore Databases...");
             BeatSaver.Unload();
             ScoreSaber.Unload();
+            System.GC.Collect();
 
-            Plugin.Log.Debug($"After Unload: Total Memory: {GC.GetTotalMemory(false)}");
+            Plugin.Log.Debug($"BeatSaver Total Memory: {GC.GetTotalMemory(false)}");
 
             DatabasesLoaded = false;
         }

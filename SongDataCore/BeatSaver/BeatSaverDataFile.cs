@@ -27,7 +27,7 @@ namespace SongDataCore.BeatSaver
             }
             catch (Exception e)
             {
-                Plugin.Log.Error("BeatSaver data corrupted...");
+                Plugin.Log.Error($"BeatSaver data corrupted, sometimes JSON dump returns from BeatSaver corrupted: {e.Message}");
             }
             timer.Stop();
 

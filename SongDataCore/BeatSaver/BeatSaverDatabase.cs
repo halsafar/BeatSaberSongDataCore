@@ -20,10 +20,12 @@ namespace SongDataCore.BeatSaver
             StartCoroutine(DownloadDatabase(BEAT_SAVER_DATA_DUMP_URL, this));
         }
 
+        /// <summary>
+        /// Attempt to reduce memory usage.
+        /// </summary>
         public void Unload()
         {
             Data = null;
-            System.GC.Collect();
         }
 
         /// <summary>

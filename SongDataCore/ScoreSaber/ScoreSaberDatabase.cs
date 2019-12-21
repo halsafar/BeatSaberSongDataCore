@@ -22,10 +22,12 @@ namespace SongDataCore.ScoreSaber
             StartCoroutine(DownloadScoreSaberDatabases());            
         }
 
+        /// <summary>
+        /// Attempt to reduce memory usage.
+        /// </summary>
         public void Unload()
         {
             Data = null;
-            System.GC.Collect();
         }
 
         /// <summary>
