@@ -18,7 +18,7 @@ namespace SongDataCore.Downloader
         /// </summary>
         public static void SetCacheable(this UnityWebRequest www, CacheableDownloadHandler handler)
         {
-            var etag = CacheableDownloadHandler.GetCacheEtag(handler.m_originalUrl);
+            var etag = handler.GetCacheEtag(handler.OriginalUrl);
             Plugin.Log.Debug($"etag: {etag}");
             if (etag != null)
                 www.SetRequestHeader("If-None-Match", etag);
@@ -35,19 +35,21 @@ namespace SongDataCore.Downloader
         const string kDataSufix = "_d";
         const string kEtagSufix = "_e";
 
-        static string s_WebCachePath;
-        static SHA1CryptoServiceProvider s_SHA1 = new SHA1CryptoServiceProvider();
+        private string m_WebCachePath;
+        private SHA1CryptoServiceProvider m_SHA1 = new SHA1CryptoServiceProvider();
 
         /// <summary>
         /// Is the download already finished?
         /// </summary>
         public new bool isDone { get; private set; }
 
+        private UnityWebRequest m_WebRequest;
+        private MemoryStream m_Stream;
 
-        UnityWebRequest m_WebRequest;
-        MemoryStream m_Stream;
         protected byte[] m_Buffer;
-        public String m_originalUrl;
+
+        private String m_originalUrl;
+        public String OriginalUrl { get { return m_originalUrl; } }
 
         internal CacheableDownloadHandler(UnityWebRequest www, byte[] preallocateBuffer)
             : base(preallocateBuffer)
@@ -60,24 +62,24 @@ namespace SongDataCore.Downloader
         /// <summary>
         /// Get path for web-caching.
         /// </summary>
-        public static string GetCachePath(string url)
+        public string GetCachePath(string url)
         {
-            if (s_WebCachePath == null)
+            if (m_WebCachePath == null)
             {
-                s_WebCachePath = Application.temporaryCachePath + "/WebCache/";
-                Plugin.Log.Debug($"{kLog}WebCachePath : {s_WebCachePath}");
+                m_WebCachePath = Application.temporaryCachePath + "/WebCache/";
+                Plugin.Log.Debug($"{kLog}WebCachePath : {m_WebCachePath}");
             }
 
-            if (!Directory.Exists(s_WebCachePath))
-                Directory.CreateDirectory(s_WebCachePath);
+            if (!Directory.Exists(m_WebCachePath))
+                Directory.CreateDirectory(m_WebCachePath);
 
-            return s_WebCachePath + Convert.ToBase64String(s_SHA1.ComputeHash(UTF8Encoding.Default.GetBytes(url))).Replace('/', '_');
+            return m_WebCachePath + Convert.ToBase64String(m_SHA1.ComputeHash(UTF8Encoding.Default.GetBytes(url))).Replace('/', '_');
         }
 
         /// <summary>
         /// Get cached Etag for url.
         /// </summary>
-        public static string GetCacheEtag(string url)
+        public string GetCacheEtag(string url)
         {
             Plugin.Log.Debug($"GetCacheEtag({url})");
             var path = GetCachePath(url);
@@ -91,7 +93,7 @@ namespace SongDataCore.Downloader
         /// <summary>
         /// Load cached data for url.
         /// </summary>
-        public static byte[] LoadCache(string url)
+        public byte[] LoadCache(string url)
         {
             return File.ReadAllBytes(GetCachePath(url) + kDataSufix);
         }
@@ -99,7 +101,7 @@ namespace SongDataCore.Downloader
         /// <summary>
         /// Save cache data for url.
         /// </summary>
-        public static void SaveCache(string url, string etag, byte[] datas)
+        public void SaveCache(string url, string etag, byte[] datas)
         {
             Plugin.Log.Debug($"SaveCache({url})");
             var path = GetCachePath(url);

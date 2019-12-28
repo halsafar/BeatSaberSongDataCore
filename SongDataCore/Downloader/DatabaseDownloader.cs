@@ -65,6 +65,12 @@ namespace SongDataCore.Downloader
 
                 yield return www.SendWebRequest();
 
+                if (www.isNetworkError)
+                {
+                    Plugin.Log.Error($"Network error downloading: {url}");
+                    yield break;
+                }
+
                 Plugin.Log.Info($"Success downloading data!");
 
                 if (_cancelRequested)
