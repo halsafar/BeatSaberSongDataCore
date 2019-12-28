@@ -17,7 +17,7 @@ namespace SongDataCore.ScoreSaber
         /// <summary>
         /// Start downloading the BeatSaver database.
         /// </summary>
-        public void Load()
+        public override void Load()
         {
             StartCoroutine(DownloadScoreSaberDatabases());            
         }
@@ -25,9 +25,23 @@ namespace SongDataCore.ScoreSaber
         /// <summary>
         /// Attempt to reduce memory usage.
         /// </summary>
-        public void Unload()
+        public override void Unload()
         {
+            StartCoroutine(WaitAndUnload());
+        }
+
+        /// <summary>
+        /// Cancel and Wait for any existing operations to complete then clean up.
+        /// </summary>
+        /// <returns></returns>
+        private IEnumerator WaitAndUnload()
+        {
+            yield return StartCoroutine(CancelDownload());
+
+            Plugin.Log.Debug($"BeatSaber Total Memory - Before ScoreSaber Unload: {GC.GetTotalMemory(false)}");
             Data = null;
+            System.GC.Collect();
+            Plugin.Log.Debug($"BeatSaber Total Memory - After  ScoreSaber Unload: {GC.GetTotalMemory(false)}");
         }
 
         /// <summary>
@@ -37,9 +51,19 @@ namespace SongDataCore.ScoreSaber
         private IEnumerator DownloadScoreSaberDatabases()
         {
             Data = null;
+            _isDownloading = true;
+            _cancelRequested = false;
 
             yield return DownloadDatabase(SCRAPED_SCORE_SABER_ALL_JSON_URL, this);
+
+            if (_cancelRequested)
+            {
+                _isDownloading = false;
+                yield break;
+            }
+
             yield return DownloadDatabase(SCRAPED_SCORE_SABER_RANKED_JSON_URL, this);
+            _isDownloading = false;
         }
 
         /// <summary>
@@ -92,6 +116,14 @@ namespace SongDataCore.ScoreSaber
         public bool IsDataAvailable()
         {
             return Data != null && Data.Songs != null;
+        }
+
+        /// <summary>
+        /// No need to interrupt ScoreSaber yet, it parses often faster than we can even interrupt it.
+        /// </summary>
+        public void CancelHandler(DownloadHandler handler)
+        {
+            return;
         }
     }
 }

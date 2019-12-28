@@ -8,6 +8,8 @@ namespace SongDataCore.Downloader
 
         void HandleDownloadResults(DownloadHandler handler);
 
+        void CancelHandler(DownloadHandler handler);
+
         bool IsDataAvailable();
     }
 }

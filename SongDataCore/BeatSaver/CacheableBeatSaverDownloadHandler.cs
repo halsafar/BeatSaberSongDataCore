@@ -13,6 +13,7 @@ namespace SongDataCore.BeatSaver
         public CacheableBeatSaverDownloadHandler(UnityWebRequest www, byte[] preallocateBuffer)
             : base(www, preallocateBuffer)
         {
+
         }
 
         /// <summary>
@@ -25,9 +26,21 @@ namespace SongDataCore.BeatSaver
             {
                 if (_dataFile == null)
                 {
-                    _dataFile = new BeatSaverDataFile(GetData());
+                    _dataFile = new BeatSaverDataFile();
+                    _dataFile.Parse(GetData());
                 }
                 return _dataFile;
+            }
+        }
+
+        /// <summary>
+        /// Cancel any parsing.
+        /// </summary>
+        public void Cancel()
+        {
+            if (_dataFile != null)
+            {
+                _dataFile.CancelParsing = true;
             }
         }
     }

@@ -86,6 +86,7 @@
     <Compile Include="Downloader\CacheableDownloaderHandler.cs" />
     <Compile Include="Downloader\DatabaseDownloader.cs" />
     <Compile Include="Downloader\IDatabaseDownloadHandler.cs" />
+    <Compile Include="Internal\JsonExtensions.cs" />
     <Compile Include="Plugin.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="ScoreSaber\CacheableScoreSaberDownloadHandler.cs" />

@@ -1,6 +1,7 @@
 ﻿using System;
 using UnityEngine.Networking;
 using SongDataCore.Downloader;
+using System.Collections;
 
 namespace SongDataCore.BeatSaver
 {
@@ -15,17 +16,46 @@ namespace SongDataCore.BeatSaver
         /// <summary>
         /// Start downloading the BeatSaver database.
         /// </summary>
-        public void Load()
+        public override void Load()
         {
-            StartCoroutine(DownloadDatabase(BEAT_SAVER_DATA_DUMP_URL, this));
+            _isDownloading = true;
+            _cancelRequested = false;
+            StartCoroutine(DownloadBeatSaberDatabase());
         }
 
         /// <summary>
         /// Attempt to reduce memory usage.
         /// </summary>
-        public void Unload()
+        public override void Unload()
+        {
+            StartCoroutine(WaitAndUnload());
+        }
+
+        /// <summary>
+        /// Cancel and wait for downloads to abort then unload.
+        /// </summary>
+        /// <returns></returns>
+        private IEnumerator WaitAndUnload()
+        {
+            yield return StartCoroutine(CancelDownload());
+
+            Plugin.Log.Debug($"BeatSaber Total Memory - Before BeatSaver Unload: {GC.GetTotalMemory(false)}");
+            Data = null;
+            System.GC.Collect();
+            Plugin.Log.Debug($"BeatSaber Total Memory - After  BeatSaver Unload: {GC.GetTotalMemory(false)}");
+        }
+
+        /// <summary>
+        /// Coroutine to manage downloading
+        /// </summary>
+        /// <returns></returns>
+        private IEnumerator DownloadBeatSaberDatabase()
         {
             Data = null;
+
+            yield return StartCoroutine(DownloadDatabase(BEAT_SAVER_DATA_DUMP_URL, this));
+
+            _isDownloading = false;
         }
 
         /// <summary>
@@ -56,6 +86,14 @@ namespace SongDataCore.BeatSaver
         public bool IsDataAvailable()
         {
             return Data != null && Data.Songs != null;
+        }
+
+        /// <summary>
+        /// This database is interruptable due to how long it can take to parse.
+        /// </summary>
+        public void CancelHandler(DownloadHandler handler)
+        {
+            (handler as CacheableBeatSaverDownloadHandler).Cancel();
         }
     }
 }

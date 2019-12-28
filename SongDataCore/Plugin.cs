@@ -92,15 +92,8 @@ namespace SongDataCore
         {
             if (!DatabasesLoaded) return;
 
-            System.GC.Collect();
-            Plugin.Log.Debug($"BeatSaver Total Memory: {GC.GetTotalMemory(false)}");
-
-            Plugin.Log.Info($"Unloading SongDataCore Databases...");
             BeatSaver.Unload();
             ScoreSaber.Unload();
-            System.GC.Collect();
-
-            Plugin.Log.Debug($"BeatSaver Total Memory: {GC.GetTotalMemory(false)}");
 
             DatabasesLoaded = false;
         }
