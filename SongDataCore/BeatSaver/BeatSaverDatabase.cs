@@ -39,10 +39,18 @@ namespace SongDataCore.BeatSaver
         {
             yield return StartCoroutine(CancelDownload());
 
-            Plugin.Log.Debug($"BeatSaber Total Memory - Before BeatSaver Unload: {GC.GetTotalMemory(false)}");
-            Data = null;
-            System.GC.Collect();
-            Plugin.Log.Debug($"BeatSaber Total Memory - After  BeatSaver Unload: {GC.GetTotalMemory(false)}");
+            if (Data != null)
+            {
+                System.GC.Collect();
+                Plugin.Log.Debug($"BeatSaber Total Memory - Before BeatSaver Unload: {GC.GetTotalMemory(false)}");
+                Data = null;
+                System.GC.Collect();
+                Plugin.Log.Debug($"BeatSaber Total Memory - After  BeatSaver Unload: {GC.GetTotalMemory(false)}");
+            }
+            else
+            {
+                Plugin.Log.Debug("BeatSaver Database not loaded...");
+            }
         }
 
         /// <summary>

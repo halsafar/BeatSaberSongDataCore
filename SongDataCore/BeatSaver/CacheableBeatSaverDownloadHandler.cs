@@ -27,7 +27,12 @@ namespace SongDataCore.BeatSaver
                 if (_dataFile == null)
                 {
                     _dataFile = new BeatSaverDataFile();
-                    _dataFile.Parse(GetData());
+                    var data = GetData();
+                    if (data == null)
+                    {
+                        return null;
+                    }
+                    _dataFile.Parse(data);
                 }
                 return _dataFile;
             }

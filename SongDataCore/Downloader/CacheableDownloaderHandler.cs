@@ -18,7 +18,7 @@ namespace SongDataCore.Downloader
         /// </summary>
         public static void SetCacheable(this UnityWebRequest www, CacheableDownloadHandler handler)
         {
-            var etag = CacheableDownloadHandler.GetCacheEtag(www.url);
+            var etag = CacheableDownloadHandler.GetCacheEtag(handler.m_originalUrl);
             Plugin.Log.Debug($"etag: {etag}");
             if (etag != null)
                 www.SetRequestHeader("If-None-Match", etag);
@@ -47,7 +47,7 @@ namespace SongDataCore.Downloader
         UnityWebRequest m_WebRequest;
         MemoryStream m_Stream;
         protected byte[] m_Buffer;
-        String m_originalUrl;
+        public String m_originalUrl;
 
         internal CacheableDownloadHandler(UnityWebRequest www, byte[] preallocateBuffer)
             : base(preallocateBuffer)
@@ -113,34 +113,42 @@ namespace SongDataCore.Downloader
         /// </summary>
         protected override byte[] GetData()
         {
-            if (!isDone)
+            try
             {
-                Plugin.Log.Error($"{kLog}Downloading is not completed : {m_WebRequest.url}");
-                throw new InvalidOperationException("Downloading is not completed. " + m_WebRequest.url);
-            }
-            else if (m_Buffer == null)
-            {
-                // Etag cache hit!
-                if (m_WebRequest.responseCode == 304)
+                if (!isDone)
                 {
-                    Plugin.Log.Debug($"<color=green>{kLog}Etag cache hit : {m_WebRequest.url}</color>");
-                    m_Buffer = LoadCache(m_originalUrl);
+                    Plugin.Log.Error($"{kLog}Downloading is not completed : {m_WebRequest.url}");
+                    throw new InvalidOperationException("Downloading is not completed. " + m_WebRequest.url);
                 }
-                // Download is completed successfully.
-                else if (m_WebRequest.responseCode == 200)
+                else if (m_Buffer == null)
                 {
-                    Plugin.Log.Debug($"<color=green>{kLog}Download is completed successfully : {m_WebRequest.url}</color>");
-                    m_Buffer = m_Stream.GetBuffer();
-                    SaveCache(m_originalUrl, m_WebRequest.GetResponseHeader("Etag"), m_Buffer);
+                    // Etag cache hit!
+                    if (m_WebRequest.responseCode == 304)
+                    {
+                        Plugin.Log.Debug($"{kLog}Etag cache hit : {m_WebRequest.url}");
+                        m_Buffer = LoadCache(m_originalUrl);
+                    }
+                    // Download is completed successfully.
+                    else if (m_WebRequest.responseCode == 200)
+                    {
+                        Plugin.Log.Debug($"{kLog}Download is completed successfully : {m_WebRequest.url}");
+                        m_Buffer = m_Stream.GetBuffer();
+                        SaveCache(m_originalUrl, m_WebRequest.GetResponseHeader("Etag"), m_Buffer);
+                    }
                 }
-            }
 
-            if (m_Stream != null)
-            {
-                m_Stream.Dispose();
-                m_Stream = null;
+                if (m_Stream != null)
+                {
+                    m_Stream.Dispose();
+                    m_Stream = null;
+                }
+                return m_Buffer;
             }
-            return m_Buffer;
+            catch (Exception e)
+            {
+                Plugin.Log.Critical(e);
+                return null;
+            }
         }
 
         /// <summary>

@@ -38,10 +38,17 @@ namespace SongDataCore.ScoreSaber
         {
             yield return StartCoroutine(CancelDownload());
 
-            Plugin.Log.Debug($"BeatSaber Total Memory - Before ScoreSaber Unload: {GC.GetTotalMemory(false)}");
-            Data = null;
-            System.GC.Collect();
-            Plugin.Log.Debug($"BeatSaber Total Memory - After  ScoreSaber Unload: {GC.GetTotalMemory(false)}");
+            if (Data != null)
+            {
+                Plugin.Log.Debug($"BeatSaber Total Memory - Before ScoreSaber Unload: {GC.GetTotalMemory(false)}");
+                Data = null;
+                System.GC.Collect();
+                Plugin.Log.Debug($"BeatSaber Total Memory - After  ScoreSaber Unload: {GC.GetTotalMemory(false)}");
+            }
+            else
+            {
+                Plugin.Log.Debug("ScoreSaber Database not loaded...");
+            }
         }
 
         /// <summary>
