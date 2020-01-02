@@ -31,7 +31,12 @@ namespace SongDataCore.BeatSaver
         public string bpm { get; set; }
         public Dictionary<string, bool> difficulties { get; set; }
 
-        [JsonConverter(typeof(BeatSaverSongCharacteristicsConverter))]
+        // read the list, deserialize process converts to map
+        [JsonProperty("characteristics")]
+        public List<BeatSaverSongCharacteristics> characteristicsList;
+
+        // manually mapped during deserialization, JsonConverter as optmized as could be added 2x to the runtime (likely due to mass object creation)
+        [JsonIgnore]
         public Dictionary<string, BeatSaverSongCharacteristics> characteristics { get; set; }
     }
 
@@ -66,33 +71,5 @@ namespace SongDataCore.BeatSaver
     {
         public string _id { get; set; }
         public string username { get; set; }
-    }
-
-    public class BeatSaverSongCharacteristicsConverter : JsonConverter
-    {
-        public override void WriteJson(JsonWriter writer, object value, JsonSerializer serializer)
-        {
-            throw new NotImplementedException();
-        }
-
-        public override object ReadJson(JsonReader reader, Type objectType, object existingValue, JsonSerializer serializer)
-        {
-            JArray jsonObject = JArray.Load(reader);
-
-            Dictionary<string, BeatSaverSongCharacteristics> retVal = new Dictionary<string, BeatSaverSongCharacteristics>();
-
-            for (int i = 0; i < jsonObject.Count; i++)
-            {
-                BeatSaverSongCharacteristics data = jsonObject[i].ToObject<BeatSaverSongCharacteristics>();
-                retVal.Add(data.name, data);
-            }
-
-            return retVal;
-        }
-
-        public override bool CanConvert(Type objectType)
-        {
-            return typeof(BeatSaverSongCharacteristics).IsAssignableFrom(objectType);
-        }
     }
 }

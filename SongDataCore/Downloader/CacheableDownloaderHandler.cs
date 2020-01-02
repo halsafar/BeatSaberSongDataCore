@@ -18,7 +18,8 @@ namespace SongDataCore.Downloader
         /// </summary>
         public static void SetCacheable(this UnityWebRequest www, CacheableDownloadHandler handler)
         {
-            var etag = CacheableDownloadHandler.GetCacheEtag(www.url);
+            var etag = handler.GetCacheEtag(handler.OriginalUrl);
+            Plugin.Log.Debug($"etag: {etag}");
             if (etag != null)
                 www.SetRequestHeader("If-None-Match", etag);
             www.downloadHandler = handler;
@@ -34,49 +35,53 @@ namespace SongDataCore.Downloader
         const string kDataSufix = "_d";
         const string kEtagSufix = "_e";
 
-        static string s_WebCachePath;
-        static SHA1CryptoServiceProvider s_SHA1 = new SHA1CryptoServiceProvider();
+        private string m_WebCachePath;
+        private SHA1CryptoServiceProvider m_SHA1 = new SHA1CryptoServiceProvider();
 
         /// <summary>
         /// Is the download already finished?
         /// </summary>
         public new bool isDone { get; private set; }
 
+        private UnityWebRequest m_WebRequest;
+        private MemoryStream m_Stream;
 
-        UnityWebRequest m_WebRequest;
-        MemoryStream m_Stream;
         protected byte[] m_Buffer;
+
+        private String m_originalUrl;
+        public String OriginalUrl { get { return m_originalUrl; } }
 
         internal CacheableDownloadHandler(UnityWebRequest www, byte[] preallocateBuffer)
             : base(preallocateBuffer)
         {
             this.m_WebRequest = www;
+            m_originalUrl = www.url;
             m_Stream = new MemoryStream(preallocateBuffer.Length);
         }
 
         /// <summary>
         /// Get path for web-caching.
         /// </summary>
-        public static string GetCachePath(string url)
+        public string GetCachePath(string url)
         {
-            if (s_WebCachePath == null)
+            if (m_WebCachePath == null)
             {
-                s_WebCachePath = Application.temporaryCachePath + "/WebCache/";
-                Plugin.Log.Debug($"{kLog}WebCachePath : {s_WebCachePath}");
-
+                m_WebCachePath = Application.temporaryCachePath + "/WebCache/";
+                Plugin.Log.Debug($"{kLog}WebCachePath : {m_WebCachePath}");
             }
 
-            if (!Directory.Exists(s_WebCachePath))
-                Directory.CreateDirectory(s_WebCachePath);
+            if (!Directory.Exists(m_WebCachePath))
+                Directory.CreateDirectory(m_WebCachePath);
 
-            return s_WebCachePath + Convert.ToBase64String(s_SHA1.ComputeHash(UTF8Encoding.Default.GetBytes(url))).Replace('/', '_');
+            return m_WebCachePath + Convert.ToBase64String(m_SHA1.ComputeHash(UTF8Encoding.Default.GetBytes(url))).Replace('/', '_');
         }
 
         /// <summary>
         /// Get cached Etag for url.
         /// </summary>
-        public static string GetCacheEtag(string url)
+        public string GetCacheEtag(string url)
         {
+            Plugin.Log.Debug($"GetCacheEtag({url})");
             var path = GetCachePath(url);
             var infoPath = path + kEtagSufix;
             var dataPath = path + kDataSufix;
@@ -88,7 +93,7 @@ namespace SongDataCore.Downloader
         /// <summary>
         /// Load cached data for url.
         /// </summary>
-        public static byte[] LoadCache(string url)
+        public byte[] LoadCache(string url)
         {
             return File.ReadAllBytes(GetCachePath(url) + kDataSufix);
         }
@@ -96,9 +101,11 @@ namespace SongDataCore.Downloader
         /// <summary>
         /// Save cache data for url.
         /// </summary>
-        public static void SaveCache(string url, string etag, byte[] datas)
+        public void SaveCache(string url, string etag, byte[] datas)
         {
+            Plugin.Log.Debug($"SaveCache({url})");
             var path = GetCachePath(url);
+
             File.WriteAllText(path + kEtagSufix, etag);
             File.WriteAllBytes(path + kDataSufix, datas);
         }
@@ -108,34 +115,42 @@ namespace SongDataCore.Downloader
         /// </summary>
         protected override byte[] GetData()
         {
-            if (!isDone)
+            try
             {
-                Plugin.Log.Error($"{kLog}Downloading is not completed : {m_WebRequest.url}");
-                throw new InvalidOperationException("Downloading is not completed. " + m_WebRequest.url);
-            }
-            else if (m_Buffer == null)
-            {
-                // Etag cache hit!
-                if (m_WebRequest.responseCode == 304)
+                if (!isDone)
                 {
-                    Plugin.Log.Debug($"<color=green>{kLog}Etag cache hit : {m_WebRequest.url}</color>");
-                    m_Buffer = LoadCache(m_WebRequest.url);
+                    Plugin.Log.Error($"{kLog}Downloading is not completed : {m_WebRequest.url}");
+                    throw new InvalidOperationException("Downloading is not completed. " + m_WebRequest.url);
                 }
-                // Download is completed successfully.
-                else if (m_WebRequest.responseCode == 200)
+                else if (m_Buffer == null)
                 {
-                    Plugin.Log.Debug($"<color=green>{kLog}Download is completed successfully : {m_WebRequest.url}</color>");
-                    m_Buffer = m_Stream.GetBuffer();
-                    SaveCache(m_WebRequest.url, m_WebRequest.GetResponseHeader("Etag"), m_Buffer);
+                    // Etag cache hit!
+                    if (m_WebRequest.responseCode == 304)
+                    {
+                        Plugin.Log.Debug($"{kLog}Etag cache hit : {m_WebRequest.url}");
+                        m_Buffer = LoadCache(m_originalUrl);
+                    }
+                    // Download is completed successfully.
+                    else if (m_WebRequest.responseCode == 200)
+                    {
+                        Plugin.Log.Debug($"{kLog}Download is completed successfully : {m_WebRequest.url}");
+                        m_Buffer = m_Stream.GetBuffer();
+                        SaveCache(m_originalUrl, m_WebRequest.GetResponseHeader("Etag"), m_Buffer);
+                    }
                 }
-            }
 
-            if (m_Stream != null)
-            {
-                m_Stream.Dispose();
-                m_Stream = null;
+                if (m_Stream != null)
+                {
+                    m_Stream.Dispose();
+                    m_Stream = null;
+                }
+                return m_Buffer;
             }
-            return m_Buffer;
+            catch (Exception e)
+            {
+                Plugin.Log.Critical(e);
+                return null;
+            }
         }
 
         /// <summary>

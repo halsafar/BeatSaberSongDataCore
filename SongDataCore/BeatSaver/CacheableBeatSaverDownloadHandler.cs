@@ -1,9 +1,4 @@
 ﻿using SongDataCore.Downloader;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using UnityEngine.Networking;
 
 namespace SongDataCore.BeatSaver
@@ -18,6 +13,7 @@ namespace SongDataCore.BeatSaver
         public CacheableBeatSaverDownloadHandler(UnityWebRequest www, byte[] preallocateBuffer)
             : base(www, preallocateBuffer)
         {
+
         }
 
         /// <summary>
@@ -30,9 +26,26 @@ namespace SongDataCore.BeatSaver
             {
                 if (_dataFile == null)
                 {
-                    _dataFile = new BeatSaverDataFile(GetData());
+                    _dataFile = new BeatSaverDataFile();
+                    var data = GetData();
+                    if (data == null)
+                    {
+                        return null;
+                    }
+                    _dataFile.Parse(data);
                 }
                 return _dataFile;
+            }
+        }
+
+        /// <summary>
+        /// Cancel any parsing.
+        /// </summary>
+        public void Cancel()
+        {
+            if (_dataFile != null)
+            {
+                _dataFile.CancelParsing = true;
             }
         }
     }

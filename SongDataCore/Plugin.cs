@@ -10,12 +10,14 @@ namespace SongDataCore
 {
     public class Plugin : IBeatSaberPlugin
     {
-        public const string VERSION_NUMBER = "1.1.5";
+        public const string VERSION_NUMBER = "1.2.0";
         public static Plugin Instance;
         public static IPA.Logging.Logger Log;
 
         public static BeatSaverDatabase BeatSaver;
         public static ScoreSaberDatabase ScoreSaber;
+
+        public bool DatabasesLoaded;
 
         public string Name
         {
@@ -35,9 +37,13 @@ namespace SongDataCore
         public void OnApplicationStart()
         {
             Instance = this;
+            DatabasesLoaded = false;
 
             BSEvents.OnLoad();
+
             BSEvents.menuSceneLoadedFresh += OnMenuSceneLoadedFresh;
+            BSEvents.menuSceneLoaded += OnMenuSceneLoaded;
+            BSEvents.gameSceneLoaded += OnGameSceneLoaded;
         }
 
         public void OnApplicationQuit()
@@ -47,8 +53,49 @@ namespace SongDataCore
 
         private void OnMenuSceneLoadedFresh()
         {
+            Log.Info("OnMenuSceneLoadedFresh()");
+
             BeatSaver = new GameObject("SongDataCore_BeatSaver").AddComponent<BeatSaverDatabase>();
+            UnityEngine.Object.DontDestroyOnLoad(BeatSaver.gameObject);
+
             ScoreSaber = new GameObject("SongDataCore_ScoreSaber").AddComponent<ScoreSaberDatabase>();
+            UnityEngine.Object.DontDestroyOnLoad(ScoreSaber.gameObject);
+
+            LoadDatabases();
+        }
+
+        private void OnMenuSceneLoaded()
+        {
+            Log.Info("OnMenuSceneLoaded()");
+
+            LoadDatabases();
+        }
+
+        private void OnGameSceneLoaded()
+        {
+            Log.Info("OnGameSceneLoaded()");
+
+            UnloadDatabases();
+        }
+
+        private void LoadDatabases()
+        {
+            if (DatabasesLoaded) return;
+
+            BeatSaver.Load();
+            ScoreSaber.Load();
+
+            DatabasesLoaded = true;
+        }
+
+        private void UnloadDatabases()
+        {
+            if (!DatabasesLoaded) return;
+
+            BeatSaver.Unload();
+            ScoreSaber.Unload();
+
+            DatabasesLoaded = false;
         }
 
         public void OnSceneLoaded(Scene scene, LoadSceneMode sceneMode)
