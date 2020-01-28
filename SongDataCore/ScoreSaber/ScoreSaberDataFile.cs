@@ -16,13 +16,21 @@ namespace SongDataCore.ScoreSaber
             Stopwatch timer = new Stopwatch();
             timer.Start();
 
-            string result = System.Text.Encoding.UTF8.GetString(data);
+            try
+            {
+                string result = System.Text.Encoding.UTF8.GetString(data);
 
-            var tmpSongs = JsonConvert.DeserializeObject<Dictionary<string, ScoreSaberSong>>(result);
-            Songs = new Dictionary<string, ScoreSaberSong>(tmpSongs, StringComparer.OrdinalIgnoreCase);
+                var tmpSongs = JsonConvert.DeserializeObject<Dictionary<string, ScoreSaberSong>>(result);
+                Songs = new Dictionary<string, ScoreSaberSong>(tmpSongs, StringComparer.OrdinalIgnoreCase);
 
-            timer.Stop();
-            Plugin.Log.Debug($"Processing ScoreSaber data took {timer.ElapsedMilliseconds}ms");
+                timer.Stop();
+                Plugin.Log.Debug($"Processing ScoreSaber data took {timer.ElapsedMilliseconds}ms");
+            }
+            catch (Exception e)
+            {
+                Plugin.Log.Error($"ScoreSaber data corrupted, sometimes JSON dump returns from BeatSaver corrupted: {e.Message}");
+                return;
+            }
         }
     }
 }
