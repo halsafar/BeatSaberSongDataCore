@@ -1,7 +1,5 @@
 ﻿using UnityEngine.SceneManagement;
-using System;
 using UnityEngine;
-using SongDataCore.BeatSaver;
 using SongDataCore.ScoreSaber;
 using IPA;
 using BS_Utils.Utilities;
@@ -14,7 +12,6 @@ namespace SongDataCore
         public static Plugin Instance;
         public static IPA.Logging.Logger Log;
 
-        //public static BeatSaverDatabase BeatSaver;
         public static ScoreSaberDatabase ScoreSaber;
 
         public bool DatabasesLoaded;
@@ -55,9 +52,6 @@ namespace SongDataCore
         {
             Log.Info("OnMenuSceneLoadedFresh()");
 
-            //BeatSaver = new GameObject("SongDataCore_BeatSaver").AddComponent<BeatSaverDatabase>();
-            //UnityEngine.Object.DontDestroyOnLoad(BeatSaver.gameObject);
-
             ScoreSaber = new GameObject("SongDataCore_ScoreSaber").AddComponent<ScoreSaberDatabase>();
             UnityEngine.Object.DontDestroyOnLoad(ScoreSaber.gameObject);
 
@@ -82,7 +76,6 @@ namespace SongDataCore
         {
             if (DatabasesLoaded) return;
 
-            //BeatSaver.Load();
             ScoreSaber.Load();
 
             DatabasesLoaded = true;
@@ -92,7 +85,6 @@ namespace SongDataCore
         {
             if (!DatabasesLoaded) return;
 
-            //BeatSaver.Unload();
             ScoreSaber.Unload();
 
             DatabasesLoaded = false;

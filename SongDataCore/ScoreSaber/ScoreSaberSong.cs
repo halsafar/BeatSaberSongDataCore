@@ -5,8 +5,8 @@ namespace SongDataCore.ScoreSaber
     public class ScoreSaberSong
     {
         public string key { get; set; }
-        public string song { get; set; }
-        public string mapper { get; set; }
+        //public string song { get; set; }
+        //public string mapper { get; set; }
         public List<ScoreSaberSongDifficultyStats> diffs { get; set; }
 
         public float bmp { get; set; }
