@@ -1,13 +1,13 @@
 ﻿using System.Collections.Generic;
 
-namespace SongDataCore.ScoreSaber
+namespace SongDataCore.BeatStar
 {
-    public class ScoreSaberSong
+    public class BeatStarSong
     {
         public string key { get; set; }
         //public string song { get; set; }
         //public string mapper { get; set; }
-        public List<ScoreSaberSongDifficultyStats> diffs { get; set; }
+        public List<BeatStarSongDifficultyStats> diffs { get; set; }
 
         public float bmp { get; set; }
         public int downloadCount { get; set; }
@@ -17,7 +17,7 @@ namespace SongDataCore.ScoreSaber
         public float rating { get; set; }
     }
 
-    public class ScoreSaberSongDifficultyStats
+    public class BeatStarSongDifficultyStats
     {
         public string diff { get; set; }
         public long scores { get; set; }

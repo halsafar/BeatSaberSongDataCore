@@ -1,6 +1,6 @@
 ﻿using UnityEngine.SceneManagement;
 using UnityEngine;
-using SongDataCore.ScoreSaber;
+using SongDataCore.BeatStar;
 using IPA;
 using BS_Utils.Utilities;
 
@@ -12,7 +12,7 @@ namespace SongDataCore
         public static Plugin Instance;
         public static IPA.Logging.Logger Log;
 
-        public static ScoreSaberDatabase ScoreSaber;
+        public static BeatStarDatabase Songs;
 
         public bool DatabasesLoaded;
 
@@ -52,8 +52,8 @@ namespace SongDataCore
         {
             Log.Info("OnMenuSceneLoadedFresh()");
 
-            ScoreSaber = new GameObject("SongDataCore_ScoreSaber").AddComponent<ScoreSaberDatabase>();
-            UnityEngine.Object.DontDestroyOnLoad(ScoreSaber.gameObject);
+            Songs = new GameObject("SongDataCore_BeatStar").AddComponent<BeatStarDatabase>();
+            UnityEngine.Object.DontDestroyOnLoad(Songs.gameObject);
 
             LoadDatabases();
         }
@@ -76,7 +76,7 @@ namespace SongDataCore
         {
             if (DatabasesLoaded) return;
 
-            ScoreSaber.Load();
+            Songs.Load();
 
             DatabasesLoaded = true;
         }
@@ -85,7 +85,7 @@ namespace SongDataCore
         {
             if (!DatabasesLoaded) return;
 
-            ScoreSaber.Unload();
+            Songs.Unload();
 
             DatabasesLoaded = false;
         }

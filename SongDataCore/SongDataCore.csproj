@@ -85,10 +85,10 @@
     <Compile Include="Internal\JsonExtensions.cs" />
     <Compile Include="Plugin.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="ScoreSaber\CacheableScoreSaberDownloadHandler.cs" />
-    <Compile Include="ScoreSaber\ScoreSaberDatabase.cs" />
-    <Compile Include="ScoreSaber\ScoreSaberDataFile.cs" />
-    <Compile Include="ScoreSaber\ScoreSaberSong.cs" />
+    <Compile Include="BeatStar\CacheableBeatStarDownloadHandler.cs" />
+    <Compile Include="BeatStar\BeatStarDatabase.cs" />
+    <Compile Include="BeatStar\BeatStarDataFile.cs" />
+    <Compile Include="BeatStar\BeatStarSong.cs" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="manifest.json" />

@@ -1,16 +1,16 @@
 ﻿using SongDataCore.Downloader;
 using UnityEngine.Networking;
 
-namespace SongDataCore.ScoreSaber
+namespace SongDataCore.BeatStar
 {
     /// <summary>
 	/// Cacheable download handler for score saber v2 json.
 	/// </summary>
-	public class CacheableScoreSaberDownloaderHandler : CacheableDownloadHandler
+	public class CacheableBeatStarDownloaderHandler : CacheableDownloadHandler
     {
-        ScoreSaberDataFile _dataFile;
+        BeatStarDataFile _dataFile;
 
-        public CacheableScoreSaberDownloaderHandler(UnityWebRequest www, byte[] preallocateBuffer)
+        public CacheableBeatStarDownloaderHandler(UnityWebRequest www, byte[] preallocateBuffer)
             : base(www, preallocateBuffer)
         {
         }
@@ -18,13 +18,13 @@ namespace SongDataCore.ScoreSaber
         /// <summary>
         /// Returns the downloaded score saber data file or null.
         /// </summary>
-        public ScoreSaberDataFile DataFile
+        public BeatStarDataFile DataFile
         {
             get
             {
                 if (_dataFile == null)
                 {
-                    _dataFile = new ScoreSaberDataFile(GetData());
+                    _dataFile = new BeatStarDataFile(GetData());
                 }
                 return _dataFile;
             }
