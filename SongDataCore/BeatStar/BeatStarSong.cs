@@ -23,5 +23,11 @@ namespace SongDataCore.BeatStar
         public long scores { get; set; }
         public double star { get; set; }
         public double pp { get; set; }
+
+        public int length { get; set; }
+        public int njs { get; set; }
+        public int bombs { get; set; }
+        public int notes { get; set; }
+        public int obstacles { get; set; }
     }
 }
