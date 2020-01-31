@@ -3,23 +3,23 @@ using System;
 using System.Collections;
 using UnityEngine.Networking;
 
-namespace SongDataCore.ScoreSaber
+namespace SongDataCore.BeatStar
 {
-    public class ScoreSaberDatabase : DatabaseDownloader, IDatabaseDownloadHandler
+    public class BeatStarDatabase : DatabaseDownloader, IDatabaseDownloadHandler
     {
         public const String SCRAPED_SCORE_SABER_ALL_JSON_URL = "https://cdn.wes.cloud/beatstar/bssb/v2-all.json";
         public const String SCRAPED_SCORE_SABER_RANKED_JSON_URL = "https://cdn.wes.cloud/beatstar/bssb/v2-ranked.json";
 
-        public ScoreSaberDataFile Data = null;
+        public BeatStarDataFile Data = null;
 
-        protected byte[] Buffer = new byte[2 * 1048576];
+        protected byte[] Buffer = new byte[16 * 1048576];
 
         /// <summary>
         /// Start downloading the BeatSaver database.
         /// </summary>
         public override void Load()
         {
-            StartCoroutine(DownloadScoreSaberDatabases());            
+            StartCoroutine(DownloadBeatStarDatabases());            
         }
 
         /// <summary>
@@ -40,14 +40,14 @@ namespace SongDataCore.ScoreSaber
 
             if (Data != null)
             {
-                Plugin.Log.Debug($"BeatSaber Total Memory - Before ScoreSaber Unload: {GC.GetTotalMemory(false)}");
+                //Plugin.Log.Debug($"BeatSaber Total Memory - Before BeatStar Unload: {GC.GetTotalMemory(false)}");
                 Data = null;
                 System.GC.Collect();
-                Plugin.Log.Debug($"BeatSaber Total Memory - After  ScoreSaber Unload: {GC.GetTotalMemory(false)}");
+                //Plugin.Log.Debug($"BeatSaber Total Memory - After  BeatStar Unload: {GC.GetTotalMemory(false)}");
             }
             else
             {
-                Plugin.Log.Debug("ScoreSaber Database not loaded...");
+                Plugin.Log.Debug("BeatStar Database not loaded...");
             }
         }
 
@@ -55,7 +55,7 @@ namespace SongDataCore.ScoreSaber
         /// Helper to download both databases.  They will be stacked together, ranked is more updated.
         /// </summary>
         /// <returns></returns>
-        private IEnumerator DownloadScoreSaberDatabases()
+        private IEnumerator DownloadBeatStarDatabases()
         {
             Data = null;
             _isDownloading = true;
@@ -80,7 +80,7 @@ namespace SongDataCore.ScoreSaber
         /// <returns></returns>
         public CacheableDownloadHandler GetDownloadHandler(UnityWebRequest www)
         {
-            var cacheHandler = new CacheableScoreSaberDownloaderHandler(www, Buffer);
+            var cacheHandler = new CacheableBeatStarDownloaderHandler(www, Buffer);
             www.SetCacheable(cacheHandler);
             return cacheHandler;
         }
@@ -93,13 +93,13 @@ namespace SongDataCore.ScoreSaber
         {
             if (Data == null)
             {
-                Data = (handler as CacheableScoreSaberDownloaderHandler).DataFile;
+                Data = (handler as CacheableBeatStarDownloaderHandler).DataFile;
             }
             else
             {
                 // Second time, update.
-                var newScoreSaberData = (handler as CacheableScoreSaberDownloaderHandler).DataFile;
-                foreach (var pair in newScoreSaberData.Songs)
+                var newBeatStarData = (handler as CacheableBeatStarDownloaderHandler).DataFile;
+                foreach (var pair in newBeatStarData.Songs)
                 {
                     if (Data.Songs.ContainsKey(pair.Key))
                     {
@@ -126,7 +126,7 @@ namespace SongDataCore.ScoreSaber
         }
 
         /// <summary>
-        /// No need to interrupt ScoreSaber yet, it parses often faster than we can even interrupt it.
+        /// No need to interrupt BeatStar yet, it parses often faster than we can even interrupt it.
         /// </summary>
         public void CancelHandler(DownloadHandler handler)
         {

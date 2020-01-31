@@ -61,7 +61,7 @@ namespace SongDataCore.Downloader
                     yield break;
                 }
 
-                Plugin.Log.Info($"Sending Web Request: {url}");
+                Plugin.Log.Debug($"Sending Web Request: {url}");
 
                 yield return www.SendWebRequest();
 
@@ -71,7 +71,7 @@ namespace SongDataCore.Downloader
                     yield break;
                 }
 
-                Plugin.Log.Info($"Success downloading data!");
+                Plugin.Log.Debug($"Success downloading data!");
 
                 if (_cancelRequested)
                 {
@@ -85,7 +85,7 @@ namespace SongDataCore.Downloader
                 CancellationTokenSource tokenSource = new CancellationTokenSource();
                 try
                 {
-                    Plugin.Log.Info($"Started data processing thread!");
+                    Plugin.Log.Debug($"Started data processing thread!");
                     _backgroundHandlerRunning = true;
                     myTask = Task.Run(() => BackgroundDownloadHandler(handler, www));
                 }

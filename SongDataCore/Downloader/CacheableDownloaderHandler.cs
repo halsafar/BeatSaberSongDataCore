@@ -19,7 +19,6 @@ namespace SongDataCore.Downloader
         public static void SetCacheable(this UnityWebRequest www, CacheableDownloadHandler handler)
         {
             var etag = handler.GetCacheEtag(handler.OriginalUrl);
-            Plugin.Log.Debug($"etag: {etag}");
             if (etag != null)
                 www.SetRequestHeader("If-None-Match", etag);
             www.downloadHandler = handler;
@@ -81,7 +80,6 @@ namespace SongDataCore.Downloader
         /// </summary>
         public string GetCacheEtag(string url)
         {
-            Plugin.Log.Debug($"GetCacheEtag({url})");
             var path = GetCachePath(url);
             var infoPath = path + kEtagSufix;
             var dataPath = path + kDataSufix;
@@ -103,7 +101,6 @@ namespace SongDataCore.Downloader
         /// </summary>
         public void SaveCache(string url, string etag, byte[] datas)
         {
-            Plugin.Log.Debug($"SaveCache({url})");
             var path = GetCachePath(url);
 
             File.WriteAllText(path + kEtagSufix, etag);
