@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using Newtonsoft.Json;
+using System.Collections.Generic;
 
 namespace SongDataCore.BeatStar
 {
@@ -15,6 +16,9 @@ namespace SongDataCore.BeatStar
         public int downVotes { get; set; }
         public float heat { get; set; }
         public float rating { get; set; }
+
+        [JsonIgnore]
+        public Dictionary<BeatStarCharacteristics, Dictionary<string, BeatStarSongDifficultyStats>> characteristics { get; set; }
     }
 
     public class BeatStarSongDifficultyStats
@@ -24,10 +28,23 @@ namespace SongDataCore.BeatStar
         public double star { get; set; }
         public double pp { get; set; }
 
-        public int length { get; set; }
+        public int type { get; set; }
+        public int len { get; set; }
         public int njs { get; set; }
-        public int bombs { get; set; }
-        public int notes { get; set; }
-        public int obstacles { get; set; }
+        public int bmb { get; set; }
+        public int nts { get; set; }
+        public int obs{ get; set; }
+    }
+
+    public enum BeatStarCharacteristics
+    {
+        Unkown,
+        Standard,
+        OneSaber,
+        NoArrows,
+        Lightshow,
+        Degree90,
+        Degree360,
+        Lawless,
     }
 }
