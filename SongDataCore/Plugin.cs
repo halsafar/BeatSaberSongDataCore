@@ -8,7 +8,7 @@ namespace SongDataCore
 {
     public class Plugin : IBeatSaberPlugin
     {
-        public const string VERSION_NUMBER = "1.3.0";
+        public const string VERSION_NUMBER = "1.3.1";
         public static Plugin Instance;
         public static IPA.Logging.Logger Log;
 
@@ -55,6 +55,8 @@ namespace SongDataCore
             Songs = new GameObject("SongDataCore_BeatStar").AddComponent<BeatStarDatabase>();
             UnityEngine.Object.DontDestroyOnLoad(Songs.gameObject);
 
+            // Force false, always load the database here.
+            DatabasesLoaded = false;
             LoadDatabases();
         }
 
