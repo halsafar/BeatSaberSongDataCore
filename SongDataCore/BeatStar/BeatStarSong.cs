@@ -10,7 +10,7 @@ namespace SongDataCore.BeatStar
         //public string mapper { get; set; }
         public List<BeatStarSongDifficultyStats> diffs { get; set; }
 
-        public float bmp { get; set; }
+        public float bpm { get; set; }
         public int downloadCount { get; set; }
         public int upVotes { get; set; }
         public int downVotes { get; set; }
