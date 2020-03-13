@@ -5,6 +5,7 @@ using UnityEngine.Networking;
 using System.Threading.Tasks;
 using UnityEngine.SceneManagement;
 using System.Threading;
+using System.IO;
 
 namespace SongDataCore.Downloader
 {
@@ -22,6 +23,8 @@ namespace SongDataCore.Downloader
 
         protected bool _isDownloading = false;
         public bool IsDownloading { get => _isDownloading; }
+
+        protected bool _firstSuccess = false;
 
         public abstract void Load();
         public abstract void Unload();
@@ -61,24 +64,32 @@ namespace SongDataCore.Downloader
                     yield break;
                 }
 
-                Plugin.Log.Debug($"Sending Web Request: {url}");
-
-                yield return www.SendWebRequest();
-
-                if (www.isNetworkError)
+                //  && File.Exists(cacheHandler.GetCachePath(cacheHandler.OriginalUrl))
+                if (!_firstSuccess)
                 {
-                    Plugin.Log.Error($"Network error downloading: {url}");
-                    yield break;
+                    Plugin.Log.Debug($"Sending Web Request: {url}");
+
+                    yield return www.SendWebRequest();
+
+                    if (www.isNetworkError)
+                    {
+                        Plugin.Log.Error($"Network error downloading: {url}");
+                        yield break;
+                    }
+
+                    Plugin.Log.Debug($"Success downloading data!");
+
+                    if (_cancelRequested)
+                    {
+                        Plugin.Log.Debug("Cancel requested after download.");
+                        yield break;
+                    }
                 }
-
-                Plugin.Log.Debug($"Success downloading data!");
-
-                if (_cancelRequested)
+                else
                 {
-                    Plugin.Log.Debug("Cancel requested after download.");
-                    yield break;
+                    Plugin.Log.Debug($"Force the use of the cached data without causing a server request...");
                 }
-
+                                
                 OnFinishDownloading?.Invoke();
 
                 Task myTask = null;

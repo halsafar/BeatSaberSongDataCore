@@ -8,11 +8,12 @@ namespace SongDataCore.BeatStar
     public class BeatStarDatabase : DatabaseDownloader, IDatabaseDownloadHandler
     {
         public const String SCRAPED_SCORE_SABER_ALL_JSON_URL = "https://cdn.wes.cloud/beatstar/bssb/v2-all.json";
-        public const String SCRAPED_SCORE_SABER_RANKED_JSON_URL = "https://cdn.wes.cloud/beatstar/bssb/v2-ranked.json";
 
         public BeatStarDataFile Data = null;
 
         protected byte[] Buffer = new byte[16 * 1048576];
+
+        CacheableBeatStarDownloaderHandler _lastCacheHandler;
 
         /// <summary>
         /// Start downloading the BeatSaver database.
@@ -63,13 +64,6 @@ namespace SongDataCore.BeatStar
 
             yield return DownloadDatabase(SCRAPED_SCORE_SABER_ALL_JSON_URL, this);
 
-            if (_cancelRequested)
-            {
-                _isDownloading = false;
-                yield break;
-            }
-
-            yield return DownloadDatabase(SCRAPED_SCORE_SABER_RANKED_JSON_URL, this);
             _isDownloading = false;
         }
 
@@ -80,9 +74,13 @@ namespace SongDataCore.BeatStar
         /// <returns></returns>
         public CacheableDownloadHandler GetDownloadHandler(UnityWebRequest www)
         {
-            var cacheHandler = new CacheableBeatStarDownloaderHandler(www, Buffer);
-            www.SetCacheable(cacheHandler);
-            return cacheHandler;
+            if (!this._firstSuccess || _lastCacheHandler == null)
+            {
+                _lastCacheHandler = new CacheableBeatStarDownloaderHandler(www, Buffer);                
+            }
+
+            www.SetCacheable(_lastCacheHandler);
+            return _lastCacheHandler;
         }
 
         /// <summary>
@@ -95,25 +93,8 @@ namespace SongDataCore.BeatStar
             {
                 Data = (handler as CacheableBeatStarDownloaderHandler).DataFile;
             }
-            else
-            {
-                // Second time, update.
-                var newBeatStarData = (handler as CacheableBeatStarDownloaderHandler).DataFile;
-                foreach (var pair in newBeatStarData.Songs)
-                {
-                    if (Data.Songs.ContainsKey(pair.Key))
-                    {
-                        foreach (var diff in pair.Value.diffs)
-                        {
-                            var index = Data.Songs[pair.Key].diffs.FindIndex(x => x.diff == diff.diff);
-                            if (index < 0)
-                            {
-                                Data.Songs[pair.Key].diffs.Add(diff);
-                            }
-                        }
-                    }
-                }
-            }
+
+            _firstSuccess = true;
         }
 
         /// <summary>

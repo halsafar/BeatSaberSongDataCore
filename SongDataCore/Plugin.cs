@@ -8,7 +8,7 @@ namespace SongDataCore
 {
     public class Plugin : IBeatSaberPlugin
     {
-        public const string VERSION_NUMBER = "1.3.1";
+        public const string VERSION_NUMBER = "1.3.2";
         public static Plugin Instance;
         public static IPA.Logging.Logger Log;
 

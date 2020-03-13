@@ -19,7 +19,7 @@ namespace SongDataCore.BeatStar
         /// Returns the downloaded score saber data file or null.
         /// </summary>
         public BeatStarDataFile DataFile
-        {
+        {           
             get
             {
                 if (_dataFile == null)
