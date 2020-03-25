@@ -6,7 +6,8 @@ using BS_Utils.Utilities;
 
 namespace SongDataCore
 {
-    public class Plugin : IBeatSaberPlugin
+    [Plugin(RuntimeOptions.SingleStartInit)]
+    public class Plugin
     {
         public const string VERSION_NUMBER = "1.3.2";
         public static Plugin Instance;
@@ -26,11 +27,13 @@ namespace SongDataCore
             get { return VERSION_NUMBER; }
         }
 
+        [Init]
         public void Init(object nullObject, IPA.Logging.Logger logger)
         {
             Log = logger;
         }
 
+        [OnStart]
         public void OnApplicationStart()
         {
             Instance = this;
@@ -41,11 +44,6 @@ namespace SongDataCore
             BSEvents.menuSceneLoadedFresh += OnMenuSceneLoadedFresh;
             BSEvents.menuSceneLoaded += OnMenuSceneLoaded;
             BSEvents.gameSceneLoaded += OnGameSceneLoaded;
-        }
-
-        public void OnApplicationQuit()
-        {
-
         }
 
         private void OnMenuSceneLoadedFresh()
@@ -90,27 +88,6 @@ namespace SongDataCore
             Songs.Unload();
 
             DatabasesLoaded = false;
-        }
-
-        public void OnSceneLoaded(Scene scene, LoadSceneMode sceneMode)
-        {
-        }
-
-        public void OnSceneUnloaded(Scene scene)
-        {
-        }
-
-        public void OnActiveSceneChanged(Scene prevScene, Scene nextScene)
-        {
-        }
-
-        public void OnUpdate()
-        {
-
-        }
-
-        public void OnFixedUpdate()
-        {
         }
     }
 }
