@@ -2,13 +2,15 @@
 using UnityEngine;
 using SongDataCore.BeatStar;
 using IPA;
+using IPA.Logging;
 using BS_Utils.Utilities;
 
 namespace SongDataCore
 {
-    public class Plugin : IBeatSaberPlugin
+    [Plugin(RuntimeOptions.SingleStartInit)]
+    public class Plugin
     {
-        public const string VERSION_NUMBER = "1.3.2";
+        public const string VERSION_NUMBER = "1.3.3";
         public static Plugin Instance;
         public static IPA.Logging.Logger Log;
 
@@ -26,12 +28,14 @@ namespace SongDataCore
             get { return VERSION_NUMBER; }
         }
 
-        public void Init(object nullObject, IPA.Logging.Logger logger)
+        [Init]
+        public Plugin(IPA.Logging.Logger logger)
         {
             Log = logger;
         }
 
-        public void OnApplicationStart()
+        [OnStart]
+        public void OnStart()
         {
             Instance = this;
             DatabasesLoaded = false;
@@ -43,7 +47,8 @@ namespace SongDataCore
             BSEvents.gameSceneLoaded += OnGameSceneLoaded;
         }
 
-        public void OnApplicationQuit()
+        [OnExit]
+        public void OnExit()
         {
 
         }
@@ -90,27 +95,6 @@ namespace SongDataCore
             Songs.Unload();
 
             DatabasesLoaded = false;
-        }
-
-        public void OnSceneLoaded(Scene scene, LoadSceneMode sceneMode)
-        {
-        }
-
-        public void OnSceneUnloaded(Scene scene)
-        {
-        }
-
-        public void OnActiveSceneChanged(Scene prevScene, Scene nextScene)
-        {
-        }
-
-        public void OnUpdate()
-        {
-
-        }
-
-        public void OnFixedUpdate()
-        {
         }
     }
 }
