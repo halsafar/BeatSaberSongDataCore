@@ -10,7 +10,7 @@ namespace SongDataCore
     [Plugin(RuntimeOptions.SingleStartInit)]
     public class Plugin
     {
-        public const string VERSION_NUMBER = "1.3.3";
+        public const string VERSION_NUMBER = "1.3.4";
         public static Plugin Instance;
         public static IPA.Logging.Logger Log;
 
@@ -42,7 +42,7 @@ namespace SongDataCore
 
             BSEvents.OnLoad();
 
-            BSEvents.menuSceneLoadedFresh += OnMenuSceneLoadedFresh;
+            BSEvents.lateMenuSceneLoadedFresh += OnMenuSceneLoadedFresh;
             BSEvents.menuSceneLoaded += OnMenuSceneLoaded;
             BSEvents.gameSceneLoaded += OnGameSceneLoaded;
         }
@@ -53,7 +53,7 @@ namespace SongDataCore
 
         }
 
-        private void OnMenuSceneLoadedFresh()
+        private void OnMenuSceneLoadedFresh(ScenesTransitionSetupDataSO data)
         {
             Log.Info("OnMenuSceneLoadedFresh()");
 
