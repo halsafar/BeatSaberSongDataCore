@@ -7,7 +7,7 @@ namespace SongDataCore.BeatStar
 {
     public class BeatStarDatabase : DatabaseDownloader, IDatabaseDownloadHandler
     {
-        public const String SCRAPED_SCORE_SABER_ALL_JSON_URL = "https://cdn.wes.cloud/beatstar/bssb/v2-all.json";
+        public const String SCRAPED_SCORE_SABER_ALL_JSON_URL = "https://cdn.wes.cloud/beatstar/bssb/v2-all.json.gz";
 
         public BeatStarDataFile Data = null;
 
