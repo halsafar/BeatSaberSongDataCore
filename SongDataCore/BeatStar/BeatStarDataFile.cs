@@ -2,6 +2,8 @@
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.IO;
+using System.IO.Compression;
 
 namespace SongDataCore.BeatStar
 {
@@ -18,7 +20,14 @@ namespace SongDataCore.BeatStar
 
             try
             {
-                string result = System.Text.Encoding.UTF8.GetString(data);
+                string result;
+                using (var compressedStream = new MemoryStream(data))
+                using (var zipStream = new GZipStream(compressedStream, CompressionMode.Decompress))
+                using (var resultStream = new MemoryStream())
+                {
+                    zipStream.CopyTo(resultStream);
+                    result = System.Text.Encoding.UTF8.GetString(resultStream.ToArray());
+                }
 
                 var tmpSongs = JsonConvert.DeserializeObject<Dictionary<string, BeatStarSong>>(result);
                 Songs = new Dictionary<string, BeatStarSong>(tmpSongs, StringComparer.OrdinalIgnoreCase);
