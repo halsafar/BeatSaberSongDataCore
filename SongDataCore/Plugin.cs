@@ -58,7 +58,6 @@ namespace SongDataCore
             Log.Info("OnMenuSceneLoadedFresh()");
 
             Songs = new GameObject("SongDataCore_BeatStar").AddComponent<BeatStarDatabase>();
-            UnityEngine.Object.DontDestroyOnLoad(Songs.gameObject);
 
             // Force false, always load the database here.
             DatabasesLoaded = false;
@@ -92,7 +91,13 @@ namespace SongDataCore
         {
             if (!DatabasesLoaded) return;
 
-            Songs.Unload();
+            if (Songs.isActiveAndEnabled)
+            {
+                Songs.Unload();
+            } else
+            {
+                Songs.UnloadNow();
+            }
 
             DatabasesLoaded = false;
         }

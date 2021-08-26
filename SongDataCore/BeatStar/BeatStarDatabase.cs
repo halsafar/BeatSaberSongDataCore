@@ -39,6 +39,13 @@ namespace SongDataCore.BeatStar
         {
             yield return StartCoroutine(CancelDownload());
 
+            UnloadNow();
+        }
+
+        public void UnloadNow()
+        {
+            Plugin.Log.Debug("Unload SongDataCore data.");
+
             if (Data != null)
             {
                 //Plugin.Log.Debug($"BeatSaber Total Memory - Before BeatStar Unload: {GC.GetTotalMemory(false)}");
