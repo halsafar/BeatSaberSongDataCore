@@ -10,7 +10,7 @@ namespace SongDataCore
     [Plugin(RuntimeOptions.SingleStartInit)]
     public class Plugin
     {
-        public const string VERSION_NUMBER = "1.4.1";
+        public const string VERSION_NUMBER = "1.4.2";
         public static Plugin Instance;
         public static IPA.Logging.Logger Log;
 
