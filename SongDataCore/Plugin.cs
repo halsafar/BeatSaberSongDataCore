@@ -4,13 +4,16 @@ using SongDataCore.BeatStar;
 using IPA;
 using IPA.Logging;
 using BS_Utils.Utilities;
+using IPA.Loader;
+using System.Reflection;
 
 namespace SongDataCore
 {
     [Plugin(RuntimeOptions.SingleStartInit)]
     public class Plugin
     {
-        public const string VERSION_NUMBER = "1.4.2";
+        public static string VersionNumber { get; private set; }
+
         public static Plugin Instance;
         public static IPA.Logging.Logger Log;
 
@@ -18,20 +21,11 @@ namespace SongDataCore
 
         public bool DatabasesLoaded;
 
-        public string Name
-        {
-            get { return "SongDataCore"; }
-        }
-
-        public string Version
-        {
-            get { return VERSION_NUMBER; }
-        }
-
         [Init]
-        public Plugin(IPA.Logging.Logger logger)
+        public void Init(IPA.Logging.Logger logger, PluginMetadata metadata)
         {
             Log = logger;
+            VersionNumber = metadata.Version?.ToString() ?? Assembly.GetExecutingAssembly().GetName().Version.ToString(3);
         }
 
         [OnStart]
