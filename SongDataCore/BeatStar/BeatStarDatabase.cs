@@ -11,7 +11,7 @@ namespace SongDataCore.BeatStar
 
         public BeatStarDataFile Data = null;
 
-        protected byte[] Buffer = new byte[16 * 1048576];
+        protected byte[] Buffer = new byte[4096];
 
         CacheableBeatStarDownloaderHandler _lastCacheHandler;
 
