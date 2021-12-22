@@ -1,6 +1,8 @@
 SongDataCore
 
-1.4.2
+1.4.6
+
+SongCore@3.9.0,BS Utils@1.11.1
 
 Download and cache database dumps of ScoreSaber and BeatSaver. Map the information by song hash and make available to other plugins.
 
