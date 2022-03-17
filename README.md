@@ -3,7 +3,7 @@
 A Beat Saber Plugin that manages scraped data from various sources.  
 
 ## Status
-- Working with BeatSaber 1.17.0
+- Working with BeatSaber 1.19.0
 
 ## Supports
 - Cached Downloads (ETAG of resource)
