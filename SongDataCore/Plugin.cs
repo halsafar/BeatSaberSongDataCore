@@ -6,6 +6,8 @@ using IPA.Logging;
 using BS_Utils.Utilities;
 using IPA.Loader;
 using System.Reflection;
+using System.Collections.Generic;
+using System.Linq;
 
 namespace SongDataCore
 {
@@ -20,6 +22,8 @@ namespace SongDataCore
         public static BeatStarDatabase Songs;
 
         public bool DatabasesLoaded;
+
+        bool hasDependent = false;
 
         [Init]
         public void Init(IPA.Logging.Logger logger, PluginMetadata metadata)
@@ -55,6 +59,14 @@ namespace SongDataCore
 
             // Force false, always load the database here.
             DatabasesLoaded = false;
+
+            hasDependent = false;
+            foreach(var x in PluginManager.EnabledPlugins) {
+                hasDependent = IPA.Utilities.ReflectionUtil.GetProperty<HashSet<PluginMetadata>, PluginMetadata>(x, "Dependencies").Any(x => x.Id == "SongDataCore");
+
+                if(hasDependent)
+                    break;
+            }
             LoadDatabases();
         }
 
@@ -74,7 +86,7 @@ namespace SongDataCore
 
         private void LoadDatabases()
         {
-            if (DatabasesLoaded) return;
+            if (DatabasesLoaded || !hasDependent) return;
 
             Songs.Load();
 
