@@ -2,14 +2,14 @@
   "$schema": "https://raw.githubusercontent.com/bsmg/BSIPA-MetadataFileSchema/master/Schema.json",
   "author": "Halsafar",
   "description": "Manage various databases of Beat Saber song data.",
-  "gameVersion": "1.20.0",
+  "gameVersion": "1.21.0",
   "id": "SongDataCore",
   "name": "SongDataCore",
-  "version": "1.4.7",
+  "version": "1.4.8",
   "dependsOn": {
     "BSIPA": "^4.2.2",
     "BS Utils": "^1.12.0",
-    "SongCore": "^3.9.5"
+    "SongCore": "^3.9.6"
   },
   "misc": {
     "plugin-hint": "SongDataCore.Plugin"
